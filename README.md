@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏥 Queue Cure '26
 
-## Getting Started
+A real-time hospital queue management system that eliminates paper token slips and waiting room chaos.
 
-First, run the development server:
+## 🚀 Live Demo
+- **Receptionist Portal:** https://queue-cure-eosin.vercel.app/
+- **Patient Waiting Room:** https://queue-cure-eosin.vercel.app/waiting
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📋 Problem Statement
+76% of India's 1.5 million clinics still run on paper token slips. Patients wait 2-3 hours with zero visibility into when they'll be called. Doctors have no dashboard. Receptionists manage everything from memory.
+
+**Queue Cure fixes that.**
+
+## ✨ Features
+
+### Receptionist Portal
+- Register patients with auto-generated token numbers
+- Set average consultation time per patient
+- Call next patient with one click
+- View full waiting queue with estimated wait times
+- Real-time validation and error handling
+
+### Patient Waiting Room
+- See current token being served (large display)
+- View upcoming tokens and estimated wait times
+- Auto-updates every 3 seconds — no refresh needed
+- Works on any device — TV, phone, tablet
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 15, Tailwind CSS |
+| Backend | Next.js API Routes |
+| Database | PostgreSQL (Neon) |
+| Real-time | Socket.io + Polling fallback |
+| Deployment | Vercel |
+
+## 🗄️ Database Schema
+
+```sql
+CREATE TABLE queue (
+  id SERIAL PRIMARY KEY,
+  token_number INT NOT NULL,
+  patient_name VARCHAR(255) NOT NULL,
+  status VARCHAR(50) DEFAULT 'waiting',
+  avg_consultation_time INT DEFAULT 10,
+  created_at TIMESTAMP DEFAULT NOW(),
+  called_at TIMESTAMP
+);
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔌 API Endpoints
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/queue | Fetch current queue state |
+| POST | /api/queue | Register new patient |
+| PATCH | /api/queue | Call next patient |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ⚡ How Real-time Works
+1. Receptionist clicks "Call Next Patient"
+2. Server updates database
+3. Socket.io broadcasts `queue_updated` event
+4. All connected screens fetch fresh data instantly
+5. Polling fallback (3s) ensures updates even without WebSocket
 
-## Learn More
+## 🏃 Run Locally
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+git clone https://github.com/Aryaa011/queue-cure.git
+cd queue-cure
+npm install
+```  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create `.env.local`:
+```
+DATABASE_URL=your_neon_postgresql_url
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+node server.js
+```
 
-## Deploy on Vercel
+Open http://localhost:3000
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👤 Author
+Arya Jain | Computer Engineering Student | SAL Engineering Institute, Ahmedabad
