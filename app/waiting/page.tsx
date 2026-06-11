@@ -17,14 +17,18 @@ export default function WaitingPage() {
 
   useEffect(() => {
     fetchQueue();
-    socket = io();
-    socket.on('queue_updated', () => {
-      setFlash(true);
-      setTimeout(() => setFlash(false), 1000);
-      fetchQueue();
-    });
-    return () => { socket.disconnect(); };
-  }, []);
+    // Socket for local, polling for deployed
+    try {
+      socket = io();
+      socket.on('queue_updated', fetchQueue);
+    } catch(e) {}
+    // Polling fallback
+    const interval = setInterval(fetchQueue, 3000);
+    return () => { 
+      clearInterval(interval);
+      if(socket) socket.disconnect(); 
+    };
+  }, []); 
 
   const estimatedWait = (position: number) => {
     const avg = queueData?.avg_consultation_time || 10;

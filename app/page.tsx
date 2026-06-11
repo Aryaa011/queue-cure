@@ -20,9 +20,17 @@ export default function ReceptionistPage() {
 
   useEffect(() => {
     fetchQueue();
-    socket = io();
-    socket.on('queue_updated', fetchQueue);
-    return () => { socket.disconnect(); };
+    // Socket for local, polling for deployed
+    try {
+      socket = io();
+      socket.on('queue_updated', fetchQueue);
+    } catch(e) {}
+    // Polling fallback
+    const interval = setInterval(fetchQueue, 3000);
+    return () => { 
+      clearInterval(interval);
+      if(socket) socket.disconnect(); 
+    }; 
   }, []);
 
   const addPatient = async () => {
